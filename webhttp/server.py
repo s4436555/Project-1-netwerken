@@ -30,6 +30,7 @@ class ConnectionHandler(threading.Thread):
         
     def run(self):
         """Run the thread of the connection handler"""
+        print 'ConnectionHandler.run()'
         self.handle_connection()
         
 
@@ -51,9 +52,15 @@ class Server:
     
     def run(self):
         """Run the HTTP Server and start listening"""
+        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serverSocket.bind((self.hostname, self.server_port))
+        self.serverSocket.listen(1)
         while not self.done:
-            pass
+            conn_socket, addr = self.serverSocket.accept()
+            handler = ConnectionHandler(conn_socket, addr, self.timeout)
+            handler.run()
     
     def shutdown(self):
         """Safely shut down the HTTP server"""
         self.done = True
+        self.serverSocket.close()
