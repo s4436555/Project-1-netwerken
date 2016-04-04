@@ -29,12 +29,19 @@ class RequestParser:
             http_request = webhttp.message.Request()
             length = len(request)
             
-            """Parsing start_line"""
+            """Parsing the first line of the header
+            
+            Syntax:
+                Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
+            """
             end_line = request.find('\r\n', 0)
-            http_request.start_line = request[0:end_line]
+            line_parts = request[0:end_line].split(' ')
+            http_request.method = line_parts[0]
+            http_request.uri = line_parts[1]
+            http_request.version = line_parts[2]
             start_line = end_line + 2
             
-            """Parsing header lines"""
+            """Parsing 'key: value' header lines"""
             while (start_line + 1 < length and
                    request[start_line] != '\r' and 
                    request[start_line + 1] != '\n'):
@@ -44,7 +51,8 @@ class RequestParser:
                     break
                 colon = request.find(': ', start_line, end_line)
                 http_request.set_header(
-                    request[start_line:colon-1], request[colon+2:end_line]
+                    request[start_line:colon], 
+                    request[colon+1:end_line].strip()
                 )
                 start_line = end_line + 2
             

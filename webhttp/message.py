@@ -49,7 +49,9 @@ class Message(object):
         Returns:
             str: representation the can be sent over socket
         """
-        message = ""
+        message = self.startline + " " + self.version + '\r\n'
+        for (key, value) in self.headerdict.iteritems():
+            message = message + key + ": " + value + '\r\n'
         return message
 
 
@@ -68,7 +70,7 @@ class Request(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = ""
+        self.startline = self.method + " " + self.uri
         return super(Request, self).__str__()
         
 
@@ -86,5 +88,5 @@ class Response(Message):
         Returns:
             str: representation the can be sent over socket
         """
-        self.startline = ""                                      
+        self.startline = str(self.code)                                      
         return super(Response, self).__str__()
