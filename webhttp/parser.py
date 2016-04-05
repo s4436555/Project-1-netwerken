@@ -47,7 +47,7 @@ class RequestParser:
                    request[start_line + 1] != '\n'):
                 end_line = request.find('\r\n', start_line)
                 if end_line < 0:
-                    print("missing clrf")
+                    print("missing CLRF")
                     break
                 colon = request.find(': ', start_line, end_line)
                 http_request.set_header(
@@ -92,4 +92,36 @@ class ResponseParser:
             webhttp.Response
         """
         response = webhttp.message.Response()
+        
+        length = len(buff)
+            
+        """Parsing the first line of the header
+        
+        Syntax:
+            Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+        """
+        end_line = buff.find('\r\n', 0)
+        line_parts = buff[0:end_line].split(' ')
+        response.code = int(line_parts[0])
+        response.version = line_parts[len(line_parts) - 1]
+        start_line = end_line + 2
+        
+        """Parsing 'key: value' header lines"""
+        while (start_line + 1 < length and
+               buff[start_line] != '\r' and 
+               buff[start_line + 1] != '\n'):
+            end_line = buff.find('\r\n', start_line)
+            if end_line < 0:
+                print("missing CRLF")
+                break
+            colon = buff.find(': ', start_line, end_line)
+            response.set_header(
+                buff[start_line:colon], 
+                buff[colon+1:end_line].strip()
+            )
+            start_line = end_line + 2
+            
+        if start_line + 2 < length - 1:
+            response.body = buff[start_line + 2: length - 1]
+        
         return response

@@ -46,8 +46,8 @@ Currently only one of the tests is implemented, you will have to implement the o
 2. ~~Implement "handle_connection" in the class "ConnectionHandler" in "webhttp/server.py". For now this method should receive a response from a client, send "Hello World" back and close the connection. Test that this works using the Python shell.~~
 3. ~~Implement "parse_requests" in the class "RequestParser" in "webhttp/parser.py". You can test your implementation by using to parse a few Requests in the Python shell.~~
 4. ~~Implement "\_\_str\_\_" for "Message", "Response" and "Request" in "webhttp/message.py". This function should return a string representation of the message according to the RFC. In order to test this you should create a few Responses and Requests in the Python shell and test if they comply with the RFC.~~
-5. Reimplement "handle_connection" using "Response", "Request", "RequestParser" and "ResponseComposer".
-6. Implement "parse_response" in "ResponseParser" in "webhttp/parser.py". At this point you should be able to pass the test in "webtests.py".
+5. ~~Reimplement "handle_connection" using "Response", "Request", "RequestParser" and "ResponseComposer".~~
+6. ~~Implement "parse_response" in "ResponseParser" in "webhttp/parser.py". At this point you should be able to pass the test in "webtests.py".~~
 7. Replace the stub code in "compose_response" in "ResponseComposer" in "webhttp/composer.py". The composer should now be able to create the correct response to a request. You can ignore persistent connections and client side caching for now, but the response should have the right code and body.
 8. Write additional tests in "webtests.py" for the following scenarios:
     * GET for a single resource that does not exist
