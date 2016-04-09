@@ -52,7 +52,7 @@ class TestGetRequests(unittest.TestCase):
         # Test response
         message = self.client_socket.recv(1024)
         response = self.parser.parse_response(message)
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, 404)
         self.assertTrue(response.body)
 
     def test_caching(self):
@@ -90,7 +90,7 @@ class TestGetRequests(unittest.TestCase):
         # Test response
         message = self.client_socket.recv(1024)
         response = self.parser.parse_response(message)
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, 404)
         self.assertTrue(response.body)
 
     def test_persistent_close(self):

@@ -48,11 +48,11 @@ Currently only one of the tests is implemented, you will have to implement the o
 4. ~~Implement "\_\_str\_\_" for "Message", "Response" and "Request" in "webhttp/message.py". This function should return a string representation of the message according to the RFC. In order to test this you should create a few Responses and Requests in the Python shell and test if they comply with the RFC.~~
 5. ~~Reimplement "handle_connection" using "Response", "Request", "RequestParser" and "ResponseComposer".~~
 6. ~~Implement "parse_response" in "ResponseParser" in "webhttp/parser.py". At this point you should be able to pass the test in "webtests.py".~~
-7. Replace the stub code in "compose_response" in "ResponseComposer" in "webhttp/composer.py". The composer should now be able to create the correct response to a request. You can ignore persistent connections and client side caching for now, but the response should have the right code and body.
+7. ~~Replace the stub code in "compose_response" in "ResponseComposer" in "webhttp/composer.py". The composer should now be able to create the correct response to a request. You can ignore persistent connections and client side caching for now, but the response should have the right code and body.~~
 8. ~~Write additional tests in "webtests.py" for the following scenarios:~~
-    * GET for a single resource that does not exist
-    * GET for a directory with an existing index.html file
-    * GET for a directory with non-existing index.html file
+    * ~~GET for a single resource that does not exist~~
+    * ~~GET for a directory with an existing index.html file~~
+    * ~~GET for a directory with non-existing index.html file~~
 Your code should be able to pass these tests at this point.
 9. Implement client side caching using ETags in "compose_response" and "generate_etag" in the class "Resource" in "resource.py". The "os.stat" module might be useful for generating an ETag. You should also implement the following test (which your server should pass at this point):
     * GET for an existing resource followed by a GET for that same resource, with caching utilized on the client/tester side.

@@ -32,12 +32,22 @@ class ResponseComposer:
 
         """
         response = webhttp.message.Response()
-
-        # Stub code
-        response.code = 200
-        response.set_header("Content-Length", 4)
+        
+        try:
+            resource = webhttp.resource.Resource(request.uri)
+            response.code = 200
+            response.set_header("Content-Length", resource.get_content_length())
+            response.body = resource.get_content()
+        except webhttp.resource.FileExistError:
+            response.code = 404
+            response.set_header("Content-Length", 20)
+            response.body = "<b>404</b> Not Found"
+        except webhttp.resource.FileAccessError:
+            response.code = 403
+            response.set_header("Content-Length", 28)
+            response.body = "<b>403</b> Permission denied"
+            
         response.set_header("Connection", "close")
-        response.body = "Test"
 
         return response
 

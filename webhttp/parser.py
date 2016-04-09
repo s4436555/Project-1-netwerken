@@ -102,8 +102,8 @@ class ResponseParser:
         """
         end_line = buff.find('\r\n', 0)
         line_parts = buff[0:end_line].split(' ')
-        response.code = int(line_parts[0])
-        response.version = line_parts[len(line_parts) - 1]
+        response.version = line_parts[0]
+        response.code = int(line_parts[1])
         start_line = end_line + 2
         
         """Parsing 'key: value' header lines"""
