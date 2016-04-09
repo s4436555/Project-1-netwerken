@@ -20,6 +20,7 @@ class ResponseComposer:
             timeout (int): connection timeout
         """
         self.timeout = timeout
+        self.persistent = True
     
     def compose_response(self, request):
         """Compose a response to a request
@@ -32,6 +33,10 @@ class ResponseComposer:
 
         """
         response = webhttp.message.Response()
+        response.set_header("Date", self.make_date_string())
+        
+        if request.get_header("Connection") != "keep-alive":
+            self.persistent = False
         
         try:
             resource = webhttp.resource.Resource(request.uri)
@@ -41,7 +46,7 @@ class ResponseComposer:
             else:
                 response.code = 200
                 response.set_header("Content-Length", resource.get_content_length())
-                response.set_header("ETag", resource.generate_etag())
+                response.set_header("ETag", etag)
                 response.body = resource.get_content()
         except webhttp.resource.FileExistError:
             response.code = 404
@@ -52,9 +57,13 @@ class ResponseComposer:
             response.set_header("Content-Length", 28)
             response.body = "<b>403</b> Permission denied"
             
-        response.set_header("Connection", "close")
+        if not self.persistent:
+            response.set_header("Connection", "close")
 
         return response
+
+    def get_persistent(self):
+        return self.persistent
 
     def match_etag(self, etag, request):
         resp_etags = request.get_header("If-None-Match")

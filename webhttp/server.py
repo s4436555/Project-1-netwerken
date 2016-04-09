@@ -31,17 +31,34 @@ class ConnectionHandler(threading.Thread):
         parser = webhttp.parser.RequestParser()
         composer = webhttp.composer.ResponseComposer(self.timeout)
         
-        request_buf = self.conn_socket.recv(4096)
-        requests = parser.parse_requests(request_buf)
+        self.closed = False
+        self.conn_socket.settimeout (self.timeout)
         
-        for request in requests:
-            self.conn_socket.send(str(composer.compose_response(request)))
+        while not self.closed:
+            try:
+                request_buf = self.conn_socket.recv(4096)
+                if request_buf == "":
+                    print "empty!"
+                    self.close_connection()
+                    break
+                requests = parser.parse_requests(request_buf)
+                
+                for request in requests:
+                    response = composer.compose_response(request)
+                    self.conn_socket.send(str(response))
+                
+                if not composer.get_persistent():
+                    self.close_connection()
+            except socket.timeout:
+                self.close_connection()
         
+    def close_connection(self):
+#        print "connection closed"
         self.conn_socket.close()
-        
+        self.closed = True
+    
     def run(self):
         """Run the thread of the connection handler"""
-        print 'ConnectionHandler.run()'
         self.handle_connection()
         
 
