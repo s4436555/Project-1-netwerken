@@ -54,8 +54,8 @@ Currently only one of the tests is implemented, you will have to implement the o
     * ~~GET for a directory with an existing index.html file~~
     * ~~GET for a directory with non-existing index.html file~~
 Your code should be able to pass these tests at this point.
-9. Implement client side caching using ETags in "compose_response" and "generate_etag" in the class "Resource" in "resource.py". The "os.stat" module might be useful for generating an ETag. You should also implement the following test (which your server should pass at this point):
-    * GET for an existing resource followed by a GET for that same resource, with caching utilized on the client/tester side.
+9. ~~Implement client side caching using ETags in "compose_response" and "generate_etag" in the class "Resource" in "resource.py". The "os.stat" module might be useful for generating an ETag. You should also implement the following test (which your server should pass at this point):~~
+    * ~~GET for an existing resource followed by a GET for that same resource, with caching utilized on the client/tester side.~~
 10. Implement persistent connections in "compose_response" and "handle_connection", and implement the following tests:
     * multiple GETs over the same (persistent) connection with the last GET prompting closing the connection, the connection should be closed.
     * multiple GETs over the same (persistent) connection, followed by a wait during which the connection times out, the connection should be closed.

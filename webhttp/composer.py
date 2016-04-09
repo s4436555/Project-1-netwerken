@@ -35,9 +35,14 @@ class ResponseComposer:
         
         try:
             resource = webhttp.resource.Resource(request.uri)
-            response.code = 200
-            response.set_header("Content-Length", resource.get_content_length())
-            response.body = resource.get_content()
+            etag = resource.generate_etag()
+            if self.match_etag(etag, request):
+                response.code = 304
+            else:
+                response.code = 200
+                response.set_header("Content-Length", resource.get_content_length())
+                response.set_header("ETag", resource.generate_etag())
+                response.body = resource.get_content()
         except webhttp.resource.FileExistError:
             response.code = 404
             response.set_header("Content-Length", 20)
@@ -50,6 +55,13 @@ class ResponseComposer:
         response.set_header("Connection", "close")
 
         return response
+
+    def match_etag(self, etag, request):
+        resp_etags = request.get_header("If-None-Match")
+        for resp_etag in resp_etags.split(", "):
+            if resp_etag == etag:
+                return True
+        return False
 
     def make_date_string(self):
         """Make string of date and time

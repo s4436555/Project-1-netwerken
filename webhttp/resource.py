@@ -48,7 +48,7 @@ class Resource:
             str: ETag for the resource
         """
         stat = os.stat(self.path)
-        etag = ""
+        etag = "\"{0:x}\"".format(int(stat.st_mtime * 100)) # should be precise enough
         return etag
 
     def get_content(self):

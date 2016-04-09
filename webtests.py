@@ -59,7 +59,37 @@ class TestGetRequests(unittest.TestCase):
         """GET for an existing single resource followed by a GET for that same
         resource with caching utilized on the client/tester side
         """
-        pass
+        # Send the initial request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+        
+        # Get the ETag of the response
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        ETag = response.get_header("ETag")
+        
+        # Connection will have been closed
+        self.client_socket.close()
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect(("localhost", portnr))
+        
+        # Send the second request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("If-None-Match", "\"test\", {0}, \"test2\"".format(ETag))
+        request.set_header("Connection", "close")
+        self.client_socket.send(str(request))
+        
+        # Check if we get 304, not modified
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.code, 304)
 
     def test_extisting_index_file(self):
         """GET for a directory with an existing index.html file"""
