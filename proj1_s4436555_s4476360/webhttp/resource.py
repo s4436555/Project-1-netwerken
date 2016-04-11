@@ -74,7 +74,7 @@ class Resource:
         """Encodes the content of the path and stores it in a new file
         """
         if encoding == "gzip":
-            new_path = os.path.join("temp", self.path.split("content")[1].lstrip("/")) 
+            new_path = os.path.join("content", os.path.join("gzip", self.path.split("content")[1].lstrip("\\")))
             new_path = new_path + ".gz"
             new_path_dir = os.path.dirname(new_path)
             try:

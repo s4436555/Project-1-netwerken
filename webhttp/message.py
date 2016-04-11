@@ -12,6 +12,7 @@ reasondict = {
     404 : "Not Found",
     406 : "Not Acceptable",
     408 : "Request Time-out",
+    505 : "HTTP Version Not Supported (HTTP 1.1 required)",
     500 : "Internal Server Error"
 }
 
@@ -49,6 +50,14 @@ class Message(object):
         else:
             return ""
         
+    def get_version(self):
+        """Get the HTTP-version
+        
+        Returns:
+            str: HTTP-version
+        """
+        return self.version
+    
     def __str__(self):
         """Convert the Message to a string
         

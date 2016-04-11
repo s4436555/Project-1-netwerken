@@ -40,30 +40,33 @@ class ResponseComposer:
         if request.get_header("Connection") != "keep-alive":
             self.persistent = False
         
-        try:
-            resource = webhttp.resource.Resource(request.uri)
-            etag = resource.generate_etag()
-            if self.match_etag(etag, request):
-                response = self.compose_common()
-                response.code = 304
-            else:
-                encoding = request.get_header("Accept-Encoding")
-                prefencoding = self.find_preferred_encoding(encoding)
-                if prefencoding != "none":
+        if request.get_version() == "HTTP/1.1":
+            try:
+                resource = webhttp.resource.Resource(request.uri)
+                etag = resource.generate_etag()
+                if self.match_etag(etag, request):
                     response = self.compose_common()
-                    response.code = 200
-                    response.set_header("ETag", etag)
-                    response.set_header("Content-Type", resource.get_content_type())
-                    resource.encode_content(prefencoding)
-                    response.set_header("Content-Length", resource.get_content_length())
-                    response.set_header("Content-Encoding", resource.get_content_encoding())
-                    response.body = resource.get_content()
+                    response.code = 304
                 else:
-                    response = self.compose_error(406, True, False)
-        except webhttp.resource.FileExistError:
-            response = self.compose_error(404, True, False)
-        except webhttp.resource.FileAccessError:
-            response = self.compose_error(403, True, False)
+                    encoding = request.get_header("Accept-Encoding")
+                    prefencoding = self.find_preferred_encoding(encoding)
+                    if prefencoding != "none":
+                        response = self.compose_common()
+                        response.code = 200
+                        response.set_header("ETag", etag)
+                        response.set_header("Content-Type", resource.get_content_type())
+                        resource.encode_content(prefencoding)
+                        response.set_header("Content-Length", resource.get_content_length())
+                        response.set_header("Content-Encoding", resource.get_content_encoding())
+                        response.body = resource.get_content()
+                    else:
+                        response = self.compose_error(406, True, False)
+            except webhttp.resource.FileExistError:
+                response = self.compose_error(404, True, False)
+            except webhttp.resource.FileAccessError:
+                response = self.compose_error(403, True, False)
+        else:
+            response = self.compose_error(505, True, False)
             
         if not self.persistent:
             response.set_header("Connection", "close")
