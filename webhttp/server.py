@@ -37,8 +37,8 @@ class ConnectionHandler(threading.Thread):
         while not self.closed:
             try:
                 request_buf = self.conn_socket.recv(4096)
-                if request_buf == "":
-                    print "Empty request!"
+                if len(request_buf) == 0:
+                    # The connection has been closed
                     self.close_connection()
                     break
                 requests = parser.parse_requests(request_buf)

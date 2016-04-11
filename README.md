@@ -58,6 +58,11 @@ Your code should be able to pass these tests at this point.
     * ~~GET for an existing resource followed by a GET for that same resource, with caching utilized on the client/tester side.~~
 10. Implement persistent connections in "compose_response" and "handle_connection", and implement the following tests:
     * ~~multiple GETs over the same (persistent) connection with the last GET prompting closing the connection, the connection should be closed.~~
-    * multiple GETs over the same (persistent) connection, followed by a wait during which the connection times out, the connection should be closed.
-11. Implement content encoding. You may need to add extra methods to class "Resource" for this. You should also implement the following test:
-    * GET which requests an existing resource gzip encoding, which is accepted by the server.
+    * ~~multiple GETs over the same (persistent) connection, followed by a wait during which the connection times out, the connection should be closed.~~
+11. ~~Implement content encoding. You may need to add extra methods to class "Resource" for this. You should also implement the following test:~~
+    * ~~GET which requests an existing resource gzip encoding, which is accepted by the server.~~
+
+## What I, want you to doe
+1. Save encoded files in another directory
+    * re-use files?
+2. Finish this project
