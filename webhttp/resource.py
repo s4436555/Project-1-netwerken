@@ -70,6 +70,8 @@ class Resource:
         return mimetype[0]
 
     def encode_content(self, encoding):
+        """Encodes the content of the path and stores it in a new file
+        """
         if encoding == "gzip":
             new_path = self.path + ".gz"
             with open(self.path, "rb") as f_in, gzip.open(new_path, "wb") as f_out:

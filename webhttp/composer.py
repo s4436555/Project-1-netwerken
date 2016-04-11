@@ -37,29 +37,20 @@ class ResponseComposer:
             webhttp.Response: response to request
 
         """
-        response = webhttp.message.Response()
-        response.set_header("Date", self.make_date_string())
-        
         if request.get_header("Connection") != "keep-alive":
             self.persistent = False
-        
-        def make_error(response, code):
-            response.code = code
-            response.body = "<b>{}</b> {}".format(
-                code, webhttp.message.reasondict[code]
-            )
-            response.set_header("Content-Type", "text/html")
-            response.set_header("Content-Length", len(response.body))
         
         try:
             resource = webhttp.resource.Resource(request.uri)
             etag = resource.generate_etag()
             if self.match_etag(etag, request):
+                response = self.compose_common()
                 response.code = 304
             else:
                 encoding = request.get_header("Accept-Encoding")
                 prefencoding = self.find_preferred_encoding(encoding)
                 if prefencoding != "none":
+                    response = self.compose_common()
                     response.code = 200
                     response.set_header("ETag", etag)
                     response.set_header("Content-Type", resource.get_content_type())
@@ -68,17 +59,38 @@ class ResponseComposer:
                     response.set_header("Content-Encoding", resource.get_content_encoding())
                     response.body = resource.get_content()
                 else:
-                    make_error(response, 406)
+                    response = self.compose_error(406, True, False)
         except webhttp.resource.FileExistError:
-            make_error(response, 404)
+            response = self.compose_error(404, True, False)
         except webhttp.resource.FileAccessError:
-            make_error(response, 403)
+            response = self.compose_error(403, True, False)
             
         if not self.persistent:
             response.set_header("Connection", "close")
 
         return response
-
+    
+    def compose_common(self):
+        response = webhttp.message.Response()
+        response.set_header("Date", self.make_date_string())
+        
+        return response
+    
+    def compose_error(self, code, body, close):
+        response = self.compose_common()
+        
+        response.code = code
+        if body:
+            response.body = "<b>{}</b> {}".format(
+                code, webhttp.message.reasondict[code]
+            )
+            response.set_header("Content-Type", "text/html")
+            response.set_header("Content-Length", len(response.body))
+        if close:
+            response.set_header("Connection", "close")
+        
+        return response
+    
     def get_persistent(self):
         return self.persistent
 

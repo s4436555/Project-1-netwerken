@@ -38,7 +38,7 @@ class ConnectionHandler(threading.Thread):
             try:
                 request_buf = self.conn_socket.recv(4096)
                 if request_buf == "":
-                    print "empty!"
+                    print "Empty request!"
                     self.close_connection()
                     break
                 requests = parser.parse_requests(request_buf)
@@ -50,6 +50,7 @@ class ConnectionHandler(threading.Thread):
                 if not composer.get_persistent():
                     self.close_connection()
             except socket.timeout:
+                self.conn_socket.send(str(composer.compose_error(408, False, True)))
                 self.close_connection()
         
     def close_connection(self):
