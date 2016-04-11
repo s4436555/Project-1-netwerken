@@ -113,6 +113,8 @@ class ResponseComposer:
                     except ValueError:
                         print("Failed to parse: " + q_part)
                         q = 1.0
+                else:
+                    q = 1.0
             else:
                 q = 1.0
             return (parts[0], q)
