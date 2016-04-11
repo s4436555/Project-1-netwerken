@@ -11,6 +11,7 @@ reasondict = {
     403 : "Forbidden",
     404 : "Not Found",
     406 : "Not Acceptable",
+    408 : "Request Time-out",
     500 : "Internal Server Error"
 }
 
