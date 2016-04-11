@@ -6,7 +6,8 @@ This module contains a handler class for resources.
 import os
 import mimetypes
 import urlparse
-
+import gzip
+import shutil
 
 class FileExistError(Exception):
     """Exception which is raised when file does not exist"""
@@ -68,6 +69,13 @@ class Resource:
         mimetype = mimetypes.guess_type(self.path)
         return mimetype[0]
 
+    def encode_content(self, encoding):
+        if encoding == "gzip":
+            new_path = self.path + ".gz"
+            with open(self.path, "rb") as f_in, gzip.open(new_path, "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            self.path = new_path
+    
     def get_content_encoding(self):
         """Get the content encoding, i.e "gzip"
 
