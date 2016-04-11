@@ -104,9 +104,9 @@ class ResponseComposer:
         if qgzip == -1:
             qgzip = qstar
         if qid == -1:
-            if "*;q=" in encoding
+            if "*;q=" in encoding:
                 qid = qstar
-            else
+            else:
                 qid = 1
         if encoding == "":
             qid = 1
