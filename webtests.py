@@ -145,6 +145,15 @@ class TestGetRequests(unittest.TestCase):
         message = self.client_socket.recv(1024)
         response = self.parser.parse_response(message)
         self.assertEqual(response.get_header("Connection"), "close")
+        
+        #check if the tcp connection has indeed been closed
+        try:
+            self.client_socket.settimeout(10)
+            self.assertTrue(len(self.client_socket.recv(1024)) == 0)
+        except socket.timeout:
+            pass
+        except socket.error:
+            pass
 
     def test_persistent_timeout(self):
         """Multiple GETs over the same (persistent) connection, followed by a
@@ -153,7 +162,7 @@ class TestGetRequests(unittest.TestCase):
         """
         """GET for a single resource that exists"""
         
-        self.client_socket.settimeout(45) # assuming a time-out of 15 on the server side
+        self.client_socket.settimeout(30) # assuming a time-out of 15 on the server side
         
         # Send the request
         request = webhttp.message.Request()
@@ -170,6 +179,15 @@ class TestGetRequests(unittest.TestCase):
         response = self.parser.parse_response(error_message)
         self.assertEqual(response.code, 408)
         self.assertEqual(response.get_header("Connection"), "close")
+        
+        #check if the tcp connection has indeed been closed
+        try:
+            self.client_socket.settimeout(10)
+            self.assertTrue(len(self.client_socket.recv(1024)) == 0)
+        except socket.timeout:
+            pass
+        except socket.error:
+            pass
 
     def test_encoding(self):
         """GET which requests an existing resource using gzip encoding, which
