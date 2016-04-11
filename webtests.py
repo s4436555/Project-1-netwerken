@@ -169,6 +169,7 @@ class TestGetRequests(unittest.TestCase):
         error_message = self.client_socket.recv(1024)
         response = self.parser.parse_response(error_message)
         self.assertEqual(response.code, 408)
+        self.assertEqual(response.get_header("Connection"), "close")
 
     def test_encoding(self):
         """GET which requests an existing resource using gzip encoding, which
