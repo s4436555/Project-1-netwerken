@@ -44,10 +44,22 @@ class ResponseComposer:
             if self.match_etag(etag, request):
                 response.code = 304
             else:
-                response.code = 200
-                response.set_header("Content-Length", resource.get_content_length())
-                response.set_header("ETag", etag)
-                response.body = resource.get_content()
+                encoding = request.get_header("Accept-Encoding")
+                prefencoding = self.get_preferred_encoding(encoding)
+                if prefencoding == 2:
+                    response.code = 200
+                    response.set_header("ETag", etag)
+                    response.set_header("Content-Encoding", "gzip")
+                    response.body = resource.get_content()
+                elif prefencoding == 1:
+                    response.code = 200
+                    response.set_header("ETag", etag)
+                    response.set_header("Content-Length", resource.get_content_length())
+                    response.body = resource.get_content()
+                else:
+                    response.code = 406
+                    response.set_header("Content-Length", 25)
+                    response.body = "<b>406</b> Not Acceptable"
         except webhttp.resource.FileExistError:
             response.code = 404
             response.set_header("Content-Length", 20)
@@ -72,6 +84,37 @@ class ResponseComposer:
                 return True
         return False
 
+    def get_preferred_encoding(self, encoding):
+        qgzip = -1
+        if "gzip" in encoding:
+            qgzip = 1
+        if "gzip;q=" in encoding:
+            safeencoding = encoding + ","
+            qgzip = float(encoding[encoding.find("gzip;q=")+7:safeencoding.find(",", encoding.find("gzip;q="))])
+        qid = -1
+        if "identity" in encoding:
+            qid = 1
+        if "identity;q=" in encoding:
+            safeencoding = encoding + ","
+            qid = float(encoding[encoding.find("identity;q=")+11:safeencoding.find(",", encoding.find("identity;q="))])
+        qstar = 0
+        if "*;q=" in encoding:
+            safeencoding = encoding + ","
+            qstar = float(encoding[encoding.find("*;q=")+4:safeencoding.find(",", encoding.find("*;q="))])
+        if qgzip == -1:
+            qgzip = qstar
+        if qid == -1:
+            qid = qstar
+        if encoding == "":
+            qid = 1
+        
+        if qgzip > qid:
+            return 2
+        elif qid > 0:
+            return 1
+        else:
+            return 0
+        
     def make_date_string(self):
         """Make string of date and time
         

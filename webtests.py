@@ -159,7 +159,21 @@ class TestGetRequests(unittest.TestCase):
         """GET which requests an existing resource using gzip encodign, which
         is accepted by the server.
         """
-        pass
+        # Send the request
+        request = webhttp.message.Request()
+        request.method = "GET"
+        request.uri = "/test/index.html"
+        request.set_header("Host", "localhost:{}".format(portnr))
+        request.set_header("Connection", "close")
+        request.set_header("Accept-Encoding", "gzip")
+        self.client_socket.send(str(request))
+
+        # Test response
+        message = self.client_socket.recv(1024)
+        response = self.parser.parse_response(message)
+        self.assertEqual(response.code, 200)
+        self.assertTrue(response.body)
+        self.assertEqual(response.get_header("Content-Encoding"), "gzip")
 
 
 if __name__ == "__main__":
