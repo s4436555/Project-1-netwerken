@@ -45,7 +45,7 @@ class ResponseComposer:
                 response.code = 304
             else:
                 encoding = request.get_header("Accept-Encoding")
-                prefencoding = self.get_preferred_encoding(encoding)
+                prefencoding = self.find_preferred_encoding(encoding)
                 if prefencoding == 2:
                     response.code = 200
                     response.set_header("ETag", etag)
@@ -84,7 +84,7 @@ class ResponseComposer:
                 return True
         return False
 
-    def get_preferred_encoding(self, encoding):
+    def find_preferred_encoding(self, encoding):
         qgzip = -1
         if "gzip" in encoding:
             qgzip = 1
@@ -104,7 +104,10 @@ class ResponseComposer:
         if qgzip == -1:
             qgzip = qstar
         if qid == -1:
-            qid = qstar
+            if "*;q=" in encoding
+                qid = qstar
+            else
+                qid = 1
         if encoding == "":
             qid = 1
         
