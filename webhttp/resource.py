@@ -73,7 +73,14 @@ class Resource:
         """Encodes the content of the path and stores it in a new file
         """
         if encoding == "gzip":
-            new_path = self.path + ".gz"
+            new_path = os.path.join("temp", self.path.split("content")[1].lstrip("/")) 
+            new_path = new_path + ".gz"
+            new_path_dir = os.path.dirname(new_path)
+            try: 
+                os.makedirs(new_path_dir)
+            except OSError:
+                if not os.path.isdir(new_path_dir):
+                    raise
             with open(self.path, "rb") as f_in, gzip.open(new_path, "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
             self.path = new_path
